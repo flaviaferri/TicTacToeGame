@@ -4,52 +4,102 @@ import styled from "@emotion/styled";
 import { useEffect } from "react";
 
 const GameWrapper = styled.section(
-  ({}) => css`
+  () => css`
     display: flex;
-    text-align: center;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
-    position: relative;
-    width: 30rem;
-    height: 30rem;
+    margin-top: 2rem;
   `
 );
 
-const Title = styled.section(
-  ({}) => css`
-    display: flex;
-    text-align: center;
-    font-size: 4rem;
-  `
-);
-
-const GameMenu = styled.div(
+const Title = styled.h1(
   ({ theme }) => css`
     display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    background: ${theme.colors.veryLightGrey};
-    border-radius: 10px;
-    padding: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    font-size: 4rem;
+    color: ${theme.colors.white};
+    border-bottom: 3px dotted ${theme.colors.beige};
+    padding-bottom: 1rem;
+    text-transform: uppercase;
+  `
+);
+const Player = styled.div(
+  ({ theme }) => css`
+    display: flex;
+    font-size: 2rem;
+    font-weight: bold;
+    color: ${theme.colors.darkGreen};
+    padding: 2rem;
+    align-items: center;
+  `
+);
+const Scoreboard = styled.div(
+  ({ theme }) => css`
+    font-size: 5rem;
+    color: ${theme.colors.white};
+    margin: 0 1rem;
   `
 );
 
 const GameBoard = styled.div(
   () => css`
-    width: 100%;
-    height: 100%;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    overflow: hidden;
+  `
+);
+
+const GameSquare = styled.button(
+  ({ theme }) => css`
+    font-size: 8rem;
+    font-weight: 500;
+    width: 15rem;
+    height: 15rem;
+    background: transparent;
+    outline: 2px solid ${theme.colors.beige};
+    border: none;
+
+    &:last-child {
+      grid-area: 3/3;
+    }
+  `
+);
+
+const PlayerO = styled.div(
+  ({ theme }) => css`
+    font-size: 10rem;
+    color: ${theme.colors.darkGreen};
+  `
+);
+
+const PlayerX = styled.div(
+  ({ theme }) => css`
+    font-size: 10rem;
+    color: ${theme.colors.white};
+  `
+);
+
+const ButtonWrapper = styled.div(
+  () => css`
+    display: flex;
+    padding: 5rem;
+    width: 100%;
+    justify-content: space-evenly;
   `
 );
 
 const GameButton = styled.button(
   ({ theme }) => css`
-    border: 1px solid ${theme.colors.white};
-    font-size: 4rem;
-    line-height: 0;
+    border: none;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-size: 1.8rem;
+    background: transparent;
+    color: ${theme.colors.white};
   `
 );
 
@@ -60,10 +110,14 @@ const WinnerMessage = styled.div(
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    color: ${theme.colors.white};
+    font-size: 1.8rem;
+    color: ${theme.colors.darkGreen};
     text-align: center;
-    background-color: ${isWinner && `#008000c4`};
+    background-color: ${isWinner && `red`};
+    height: 5rem;
+    width: 50rem;
+    border-radius: 1.5rem;
+    position: absolute;
   `
 );
 
@@ -77,8 +131,11 @@ export default function Game() {
   const [player, setPlayer] = useState(true);
   const [ticTacToe, setTicTacToe] = useState(initialPositions);
   const [isWinner, setIsWinner] = useState("");
+  const [lineWinner, setLineWinner] = useState([]);
   const [isDraw, setIsDraw] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [countOWinner, setCountOWinner] = useState(0);
+  const [countXWinner, setCountXWinner] = useState(0);
 
   const handelClick = (indexRow, indexCell) => {
     if (isWinner) return;
@@ -101,8 +158,25 @@ export default function Game() {
 
   const getplayerIcon = (indexRow, indexCell) => {
     if (ticTacToe[indexRow][indexCell][0] !== null) {
-      return ticTacToe[indexRow][indexCell][0] > 0 ? "O" : "X";
+      return ticTacToe[indexRow][indexCell][0] > 0 ? (
+        <>
+          <PlayerO lineWinner={lineWinner}>O</PlayerO>
+        </>
+      ) : (
+        <>
+          <PlayerX isWinner={isWinner}>X</PlayerX>
+        </>
+      );
     }
+  };
+
+  const newGameButton = () => {
+    return console.log("new game");
+    // setTicTacToe(initialPositions);
+  };
+
+  const resetGameButton = () => {
+    return console.log("Reset Game");
   };
 
   // Check winner
@@ -120,18 +194,23 @@ export default function Game() {
       [ticTacToe[0][2], ticTacToe[1][1], ticTacToe[2][0]],
     ];
 
-    possibleWaysToWin.map((row) => {
+    possibleWaysToWin.map((row, index) => {
       if (row.every((cell) => cell[0] === 1)) {
-        console.log("winner o");
         setIsWinner("O");
         setShowMessage(true);
+        setLineWinner(index);
+
+        return;
       }
       if (row.every((cell) => cell[0] === -1)) {
         setIsWinner("X");
         setShowMessage(true);
+        setLineWinner(index);
+
+        return;
       }
     });
-  });
+  }, [ticTacToe, player]);
 
   useEffect(() => {
     const hasDraw = () => {
@@ -157,6 +236,11 @@ export default function Game() {
       setIsWinner("");
       setIsDraw(false);
       setShowMessage(false);
+      if (isWinner === "O") {
+        setCountOWinner(countOWinner + 1);
+      } else {
+        setCountXWinner(countXWinner + 1);
+      }
     }, 3000);
 
     return () => {
@@ -166,20 +250,31 @@ export default function Game() {
 
   return (
     <GameWrapper>
-      <Title>Tic Tac Toe Game</Title>
+      <Title>Tic Tac Toe</Title>
+      <Player>
+        O -
+        <Scoreboard>
+          {countOWinner} : {countXWinner}
+        </Scoreboard>
+        - X
+      </Player>
       <GameBoard>
         {ticTacToe.map((row, indexRow) =>
           row.map((_, indexCell) => (
-            <GameButton
+            <GameSquare
               key={indexCell}
               type="button"
               onClick={() => handelClick(indexRow, indexCell)}
             >
               {getplayerIcon(indexRow, indexCell)}
-            </GameButton>
+            </GameSquare>
           ))
         )}
       </GameBoard>
+      <ButtonWrapper>
+        <GameButton onClick={() => newGameButton()}>New Game</GameButton>
+        <GameButton onClick={() => resetGameButton()}>Reset Game</GameButton>
+      </ButtonWrapper>
       <WinnerMessage isWinner={showMessage}>
         {showMessage && <>Congratulations you won the match</>}
       </WinnerMessage>
