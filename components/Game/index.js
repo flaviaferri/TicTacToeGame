@@ -10,6 +10,7 @@ const GameWrapper = styled.section(
     justify-content: center;
     flex-direction: column;
     margin-top: 2rem;
+    height: 100vh;
   `
 );
 
@@ -24,9 +25,16 @@ const Title = styled.h1(
     border-bottom: 3px dotted ${theme.colors.beige};
     padding-bottom: 1rem;
     text-transform: uppercase;
+
+    ${theme.breakpoints[0]} {
+      width: 90%;
+      font-size: 3rem;
+    }
   `
 );
-const Player = styled.div(
+
+// scoreboard style
+const PlayerBoard = styled.div(
   ({ theme }) => css`
     display: flex;
     align-items: center;
@@ -36,6 +44,10 @@ const Player = styled.div(
     font-weight: bold;
     color: ${theme.colors.darkGreen};
     padding: 2rem;
+
+    ${theme.breakpoints[0]} {
+      width: 80%;
+    }
   `
 );
 const Scoreboard = styled.div(
@@ -43,9 +55,25 @@ const Scoreboard = styled.div(
     font-size: 5rem;
     color: ${theme.colors.white};
     margin: 0 1rem;
+
+    ${theme.breakpoints[0]} {
+      font-size: 4rem;
+    }
   `
 );
 
+const PlayerPoint = styled.span(
+  ({ theme, player }) => css`
+    opacity: ${player && "0"};
+    width: 1rem;
+    height: 1rem;
+    background: ${theme.colors.yellow};
+    border-radius: 50%;
+    margin: 1rem;
+  `
+);
+
+// playboard Style
 const GameBoard = styled.div(
   () => css`
     display: grid;
@@ -69,13 +97,23 @@ const GameButton = styled.button(
     &:last-child {
       grid-area: 3/3;
     }
+
+    ${theme.breakpoints[0]} {
+      width: 10rem;
+      height: 10rem;
+    }
   `
 );
 
+//players style
 const PlayerO = styled.div(
   ({ theme }) => css`
     font-size: 10rem;
     color: ${theme.colors.darkGreen};
+
+    ${theme.breakpoints[0]} {
+      font-size: 8rem;
+    }
   `
 );
 
@@ -83,26 +121,25 @@ const PlayerX = styled.div(
   ({ theme }) => css`
     font-size: 10rem;
     color: ${theme.colors.white};
+
+    ${theme.breakpoints[0]} {
+      font-size: 8rem;
+    }
   `
 );
 
-const PlayerPoint = styled.span(
-  ({ theme, player }) => css`
-    opacity: ${player && "0"};
-    width: 1rem;
-    height: 1rem;
-    background: ${theme.colors.yellow};
-    border-radius: 50%;
-    margin: 1rem;
-  `
-);
-
+// New Game and reset buttons style
 const ButtonWrapper = styled.div(
-  () => css`
+  ({ theme }) => css`
     display: flex;
-    padding: 5rem;
-    width: 100%;
+    padding: 2rem;
+    width: 70%;
     justify-content: space-evenly;
+
+    ${theme.breakpoints[0]} {
+      width: 100%;
+      padding: 4rem 2rem;
+    }
   `
 );
 
@@ -227,6 +264,7 @@ export default function Game() {
     });
   }, [ticTacToe, player]);
 
+  // Draw checker
   useEffect(() => {
     const hasDraw = () => {
       const hasNull = ticTacToe.filter((itemRow) => {
@@ -242,37 +280,38 @@ export default function Game() {
     }
   });
 
-  // Show message
+  // Restart game Timeout
   useEffect(() => {
-    if (!isWinner) return;
+    if (!isWinner && !isDraw) return;
 
     const messageTimeout = setTimeout(() => {
       setTicTacToe(initialPositions);
       setIsWinner("");
       setIsDraw(false);
-      // setShowMessage(false);
+
       if (isWinner === "O") {
         setCountOWinner(countOWinner + 1);
-      } else {
+      } else if (isWinner === "X") {
         setCountXWinner(countXWinner + 1);
       }
+      return;
     }, 3000);
 
     return () => {
       clearTimeout(messageTimeout);
     };
-  }, [isWinner, initialPositions]);
+  }, [isWinner, initialPositions, isDraw]);
 
   return (
     <GameWrapper>
       <Title>Tic Tac Toe</Title>
-      <Player>
+      <PlayerBoard>
         <PlayerPoint player={!player}></PlayerPoint>O -
         <Scoreboard>
           {countOWinner} : {countXWinner}
         </Scoreboard>
         - X <PlayerPoint player={player}></PlayerPoint>
-      </Player>
+      </PlayerBoard>
       <GameBoard>
         {ticTacToe.map((row, indexRow) =>
           row.map((_, indexCell) => (
@@ -290,9 +329,6 @@ export default function Game() {
         <Button onClick={() => newGameButton()}>New Game</Button>
         <Button onClick={() => resetGameButton()}>Reset Game</Button>
       </ButtonWrapper>
-      {/* <WinnerMessage isWinner={showMessage}>
-        {showMessage && <>Congratulations you won the match</>}
-      </WinnerMessage> */}
     </GameWrapper>
   );
 }

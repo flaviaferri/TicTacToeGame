@@ -11,5 +11,5 @@ export const theme = {
     black: "#000",
   },
 
-  breakpoints: breakpoints.map((bp) => `@media (min-width: ${bp}px)`),
+  breakpoints: breakpoints.map((bp) => `@media (max-width: ${bp}px)`),
 };
