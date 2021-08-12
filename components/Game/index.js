@@ -29,11 +29,13 @@ const Title = styled.h1(
 const Player = styled.div(
   ({ theme }) => css`
     display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
     font-size: 2rem;
     font-weight: bold;
     color: ${theme.colors.darkGreen};
     padding: 2rem;
-    align-items: center;
   `
 );
 const Scoreboard = styled.div(
@@ -53,7 +55,7 @@ const GameBoard = styled.div(
   `
 );
 
-const GameSquare = styled.button(
+const GameButton = styled.button(
   ({ theme }) => css`
     font-size: 8rem;
     font-weight: 500;
@@ -62,6 +64,7 @@ const GameSquare = styled.button(
     background: transparent;
     outline: 2px solid ${theme.colors.beige};
     border: none;
+    cursor: pointer;
 
     &:last-child {
       grid-area: 3/3;
@@ -83,6 +86,17 @@ const PlayerX = styled.div(
   `
 );
 
+const PlayerPoint = styled.span(
+  ({ theme, player }) => css`
+    opacity: ${player && "0"};
+    width: 1rem;
+    height: 1rem;
+    background: ${theme.colors.yellow};
+    border-radius: 50%;
+    margin: 1rem;
+  `
+);
+
 const ButtonWrapper = styled.div(
   () => css`
     display: flex;
@@ -92,7 +106,7 @@ const ButtonWrapper = styled.div(
   `
 );
 
-const GameButton = styled.button(
+const Button = styled.button(
   ({ theme }) => css`
     border: none;
     text-transform: uppercase;
@@ -103,23 +117,23 @@ const GameButton = styled.button(
   `
 );
 
-const WinnerMessage = styled.div(
-  ({ theme, isWinner }) => css`
-    margin-top: 0.5rem;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    color: ${theme.colors.darkGreen};
-    text-align: center;
-    background-color: ${isWinner && `red`};
-    height: 5rem;
-    width: 50rem;
-    border-radius: 1.5rem;
-    position: absolute;
-  `
-);
+// const WinnerMessage = styled.div(
+//   ({ theme, isWinner }) => css`
+//     margin-top: 0.5rem;
+//     min-height: 40px;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     font-size: 1.8rem;
+//     color: ${theme.colors.darkGreen};
+//     text-align: center;
+//     background-color: ${isWinner && `red`};
+//     height: 5rem;
+//     width: 50rem;
+//     border-radius: 1.5rem;
+//     position: absolute;
+//   `
+// );
 
 export default function Game() {
   const initialPositions = [
@@ -133,7 +147,7 @@ export default function Game() {
   const [isWinner, setIsWinner] = useState("");
   const [lineWinner, setLineWinner] = useState([]);
   const [isDraw, setIsDraw] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
+  // const [showMessage, setShowMessage] = useState(false);
   const [countOWinner, setCountOWinner] = useState(0);
   const [countXWinner, setCountXWinner] = useState(0);
 
@@ -171,12 +185,13 @@ export default function Game() {
   };
 
   const newGameButton = () => {
-    return console.log("new game");
-    // setTicTacToe(initialPositions);
+    return setTicTacToe(initialPositions);
   };
 
   const resetGameButton = () => {
-    return console.log("Reset Game");
+    setTicTacToe(initialPositions);
+    setCountOWinner(0);
+    setCountXWinner(0);
   };
 
   // Check winner
@@ -197,14 +212,14 @@ export default function Game() {
     possibleWaysToWin.map((row, index) => {
       if (row.every((cell) => cell[0] === 1)) {
         setIsWinner("O");
-        setShowMessage(true);
+        // setShowMessage(true);
         setLineWinner(index);
 
         return;
       }
       if (row.every((cell) => cell[0] === -1)) {
         setIsWinner("X");
-        setShowMessage(true);
+        // setShowMessage(true);
         setLineWinner(index);
 
         return;
@@ -235,7 +250,7 @@ export default function Game() {
       setTicTacToe(initialPositions);
       setIsWinner("");
       setIsDraw(false);
-      setShowMessage(false);
+      // setShowMessage(false);
       if (isWinner === "O") {
         setCountOWinner(countOWinner + 1);
       } else {
@@ -252,32 +267,32 @@ export default function Game() {
     <GameWrapper>
       <Title>Tic Tac Toe</Title>
       <Player>
-        O -
+        <PlayerPoint player={!player}></PlayerPoint>O -
         <Scoreboard>
           {countOWinner} : {countXWinner}
         </Scoreboard>
-        - X
+        - X <PlayerPoint player={player}></PlayerPoint>
       </Player>
       <GameBoard>
         {ticTacToe.map((row, indexRow) =>
           row.map((_, indexCell) => (
-            <GameSquare
+            <GameButton
               key={indexCell}
               type="button"
               onClick={() => handelClick(indexRow, indexCell)}
             >
               {getplayerIcon(indexRow, indexCell)}
-            </GameSquare>
+            </GameButton>
           ))
         )}
       </GameBoard>
       <ButtonWrapper>
-        <GameButton onClick={() => newGameButton()}>New Game</GameButton>
-        <GameButton onClick={() => resetGameButton()}>Reset Game</GameButton>
+        <Button onClick={() => newGameButton()}>New Game</Button>
+        <Button onClick={() => resetGameButton()}>Reset Game</Button>
       </ButtonWrapper>
-      <WinnerMessage isWinner={showMessage}>
+      {/* <WinnerMessage isWinner={showMessage}>
         {showMessage && <>Congratulations you won the match</>}
-      </WinnerMessage>
+      </WinnerMessage> */}
     </GameWrapper>
   );
 }
