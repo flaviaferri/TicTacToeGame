@@ -80,6 +80,13 @@ const GameBoard = styled.div(
     grid-auto-columns: 1fr;
     grid-auto-rows: 1fr;
     overflow: hidden;
+    width: 51rem;
+    height: 51rem;
+
+    ${theme.breakpoints[0]} {
+      width: 30rem;
+      height: 30rem;
+    }
   `
 );
 
@@ -87,8 +94,7 @@ const GameButton = styled.button(
   ({ theme }) => css`
     font-size: 8rem;
     font-weight: 500;
-    width: 15rem;
-    height: 15rem;
+
     background: transparent;
     outline: 2px solid ${theme.colors.beige};
     border: none;
@@ -97,11 +103,6 @@ const GameButton = styled.button(
 
     &:last-child {
       grid-area: 3/3;
-    }
-
-    ${theme.breakpoints[0]} {
-      width: 10rem;
-      height: 10rem;
     }
   `
 );
@@ -114,7 +115,7 @@ const PlayerO = styled.p(
     text-align: center;
 
     ${theme.breakpoints[0]} {
-      font-size: 8rem;
+      font-size: 7rem;
     }
   `
 );
@@ -126,7 +127,7 @@ const PlayerX = styled.p(
     text-align: center;
 
     ${theme.breakpoints[0]} {
-      font-size: 8rem;
+      font-size: 7rem;
     }
   `
 );
