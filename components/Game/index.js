@@ -107,10 +107,11 @@ const GameButton = styled.button(
 );
 
 //players style
-const PlayerO = styled.div(
+const PlayerO = styled.p(
   ({ theme }) => css`
     font-size: 10rem;
     color: ${theme.colors.darkGreen};
+    text-align: center;
 
     ${theme.breakpoints[0]} {
       font-size: 8rem;
@@ -118,10 +119,11 @@ const PlayerO = styled.div(
   `
 );
 
-const PlayerX = styled.div(
+const PlayerX = styled.p(
   ({ theme }) => css`
     font-size: 10rem;
     color: ${theme.colors.white};
+    text-align: center;
 
     ${theme.breakpoints[0]} {
       font-size: 8rem;
