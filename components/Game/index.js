@@ -9,7 +9,7 @@ const GameWrapper = styled.section(
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    margin-top: 2rem;
+    margin: 2rem;
     min-height: 100vh;
   `
 );
@@ -27,7 +27,7 @@ const Title = styled.h1(
     text-transform: uppercase;
 
     ${theme.breakpoints[0]} {
-      width: 90%;
+      width: 100%;
       font-size: 3rem;
     }
   `
@@ -46,7 +46,7 @@ const PlayerBoard = styled.div(
     padding: 2rem;
 
     ${theme.breakpoints[0]} {
-      width: 80%;
+      width: 100%;
     }
   `
 );
@@ -75,7 +75,7 @@ const PlayerPoint = styled.span(
 
 // playboard Style
 const GameBoard = styled.div(
-  () => css`
+  ({ theme }) => css`
     display: grid;
     grid-auto-columns: 1fr;
     grid-auto-rows: 1fr;
@@ -84,7 +84,7 @@ const GameBoard = styled.div(
 );
 
 const GameButton = styled.button(
-  ({ theme, lineWinner }) => css`
+  ({ theme }) => css`
     font-size: 8rem;
     font-weight: 500;
     width: 15rem;
@@ -171,6 +171,10 @@ const Message = styled.div(
     height: 5rem;
     width: 50rem;
     border-radius: 1.5rem;
+
+    ${theme.breakpoints[0]} {
+      width: 20rem;
+    }
   `
 );
 
