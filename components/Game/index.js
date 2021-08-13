@@ -10,7 +10,7 @@ const GameWrapper = styled.section(
     justify-content: center;
     flex-direction: column;
     margin-top: 2rem;
-    height: 100vh;
+    min-height: 100vh;
   `
 );
 
@@ -84,7 +84,7 @@ const GameBoard = styled.div(
 );
 
 const GameButton = styled.button(
-  ({ theme }) => css`
+  ({ theme, lineWinner }) => css`
     font-size: 8rem;
     font-weight: 500;
     width: 15rem;
@@ -154,23 +154,33 @@ const Button = styled.button(
   `
 );
 
-// const WinnerMessage = styled.div(
-//   ({ theme, isWinner }) => css`
-//     margin-top: 0.5rem;
-//     min-height: 40px;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     font-size: 1.8rem;
-//     color: ${theme.colors.darkGreen};
-//     text-align: center;
-//     background-color: ${isWinner && `red`};
-//     height: 5rem;
-//     width: 50rem;
-//     border-radius: 1.5rem;
-//     position: absolute;
-//   `
-// );
+const MessageWrapper = styled.div(
+  () => css`
+    position: absolute;
+  `
+);
+
+const Message = styled.div(
+  ({ theme }) => css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: ${theme.colors.darkGreen};
+    background-color: ${theme.colors.white};
+    height: 5rem;
+    width: 50rem;
+    border-radius: 1.5rem;
+  `
+);
+
+const Winner = styled.p(
+  () => css`
+    font-size: 2rem;
+    font-weight: 700;
+    margin-right: 0.5rem;
+  `
+);
 
 export default function Game() {
   const initialPositions = [
@@ -182,11 +192,24 @@ export default function Game() {
   const [player, setPlayer] = useState(true);
   const [ticTacToe, setTicTacToe] = useState(initialPositions);
   const [isWinner, setIsWinner] = useState("");
-  const [lineWinner, setLineWinner] = useState([]);
+  const [winnerMessage, setWinnerMessage] = useState(false);
   const [isDraw, setIsDraw] = useState(false);
-  // const [showMessage, setShowMessage] = useState(false);
+  const [drawMessage, setDrawMessage] = useState(false);
   const [countOWinner, setCountOWinner] = useState(0);
   const [countXWinner, setCountXWinner] = useState(0);
+
+  const possibleWaysToWin = [
+    [ticTacToe[0][0], ticTacToe[0][1], ticTacToe[0][2]],
+    [ticTacToe[1][0], ticTacToe[1][1], ticTacToe[1][2]],
+    [ticTacToe[2][0], ticTacToe[2][1], ticTacToe[2][2]],
+
+    [ticTacToe[0][0], ticTacToe[1][0], ticTacToe[2][0]],
+    [ticTacToe[0][1], ticTacToe[1][1], ticTacToe[2][1]],
+    [ticTacToe[0][2], ticTacToe[1][2], ticTacToe[2][2]],
+
+    [ticTacToe[0][0], ticTacToe[1][1], ticTacToe[2][2]],
+    [ticTacToe[0][2], ticTacToe[1][1], ticTacToe[2][0]],
+  ];
 
   const handelClick = (indexRow, indexCell) => {
     if (isWinner) return;
@@ -207,11 +230,12 @@ export default function Game() {
     setPlayer(!player);
   };
 
+  // Responsible for changing the value (-1 || 1) by the icon ( O || X)
   const getplayerIcon = (indexRow, indexCell) => {
     if (ticTacToe[indexRow][indexCell][0] !== null) {
       return ticTacToe[indexRow][indexCell][0] > 0 ? (
         <>
-          <PlayerO lineWinner={lineWinner}>O</PlayerO>
+          <PlayerO isWinner={isWinner}>O</PlayerO>
         </>
       ) : (
         <>
@@ -221,43 +245,32 @@ export default function Game() {
     }
   };
 
+  // New Game button
   const newGameButton = () => {
-    return setTicTacToe(initialPositions);
+    return setTicTacToe(initialPositions); // back to initial position
   };
 
+  // Reset Game Button
   const resetGameButton = () => {
-    setTicTacToe(initialPositions);
-    setCountOWinner(0);
-    setCountXWinner(0);
+    setTicTacToe(initialPositions); // back to initial positions
+    setCountOWinner(0); //back to score 0
+    setCountXWinner(0); // back to score 0
   };
 
   // Check winner
   useEffect(() => {
-    const possibleWaysToWin = [
-      [ticTacToe[0][0], ticTacToe[0][1], ticTacToe[0][2]],
-      [ticTacToe[1][0], ticTacToe[1][1], ticTacToe[1][2]],
-      [ticTacToe[2][0], ticTacToe[2][1], ticTacToe[2][2]],
-
-      [ticTacToe[0][0], ticTacToe[1][0], ticTacToe[2][0]],
-      [ticTacToe[0][1], ticTacToe[1][1], ticTacToe[2][1]],
-      [ticTacToe[0][2], ticTacToe[1][2], ticTacToe[2][2]],
-
-      [ticTacToe[0][0], ticTacToe[1][1], ticTacToe[2][2]],
-      [ticTacToe[0][2], ticTacToe[1][1], ticTacToe[2][0]],
-    ];
-
     possibleWaysToWin.map((row, index) => {
       if (row.every((cell) => cell[0] === 1)) {
         setIsWinner("O");
-        // setShowMessage(true);
-        setLineWinner(index);
+        setWinnerMessage(true);
+        new Audio("/winner.mp3").play();
 
         return;
       }
       if (row.every((cell) => cell[0] === -1)) {
         setIsWinner("X");
-        // setShowMessage(true);
-        setLineWinner(index);
+        setWinnerMessage(true);
+        new Audio("/winner.mp3").play();
 
         return;
       }
@@ -277,10 +290,13 @@ export default function Game() {
 
     if (hasDraw()) {
       setIsDraw(true);
+      setDrawMessage(true);
+
+      new Audio("/draw.mp3").play();
     }
   });
 
-  // Restart game Timeout
+  // Restart game Timeout and count scoreboard
   useEffect(() => {
     if (!isWinner && !isDraw) return;
 
@@ -288,14 +304,16 @@ export default function Game() {
       setTicTacToe(initialPositions);
       setIsWinner("");
       setIsDraw(false);
+      setDrawMessage(false);
+      setWinnerMessage(false);
 
       if (isWinner === "O") {
-        setCountOWinner(countOWinner + 1);
+        setCountOWinner(countOWinner + 1); // add point to O
       } else if (isWinner === "X") {
-        setCountXWinner(countXWinner + 1);
+        setCountXWinner(countXWinner + 1); // add point to X
       }
       return;
-    }, 3000);
+    }, 5000);
 
     return () => {
       clearTimeout(messageTimeout);
@@ -329,6 +347,15 @@ export default function Game() {
         <Button onClick={() => newGameButton()}>New Game</Button>
         <Button onClick={() => resetGameButton()}>Reset Game</Button>
       </ButtonWrapper>
+      <MessageWrapper drawMessage={drawMessage} winnerMessage={winnerMessage}>
+        {drawMessage && <Message>Tied Game 😕</Message>}
+        {winnerMessage && (
+          <Message>
+            {isWinner === "O" ? <Winner>O</Winner> : <Winner>X</Winner>}
+            Won!! 🎉
+          </Message>
+        )}
+      </MessageWrapper>
     </GameWrapper>
   );
 }
