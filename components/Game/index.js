@@ -93,6 +93,7 @@ const GameButton = styled.button(
     outline: 2px solid ${theme.colors.beige};
     border: none;
     cursor: pointer;
+    text-align: center;
 
     &:last-child {
       grid-area: 3/3;
