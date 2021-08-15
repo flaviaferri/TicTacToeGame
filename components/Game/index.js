@@ -3,192 +3,22 @@ import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useEffect } from "react";
 
-const GameWrapper = styled.section(
-  () => css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    margin: 2rem;
-    min-height: 100vh;
-  `
-);
-
-const Title = styled.h1(
-  ({ theme }) => css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80%;
-    font-size: 4rem;
-    color: ${theme.colors.white};
-    border-bottom: 3px dotted ${theme.colors.beige};
-    padding-bottom: 1rem;
-    text-transform: uppercase;
-
-    ${theme.breakpoints[0]} {
-      width: 100%;
-      font-size: 3rem;
-    }
-  `
-);
-
-// scoreboard style
-const PlayerBoard = styled.div(
-  ({ theme }) => css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    font-size: 2rem;
-    font-weight: bold;
-    color: ${theme.colors.darkGreen};
-    padding: 2rem;
-
-    ${theme.breakpoints[0]} {
-      width: 100%;
-    }
-  `
-);
-const Scoreboard = styled.div(
-  ({ theme }) => css`
-    font-size: 5rem;
-    color: ${theme.colors.white};
-    margin: 0 1rem;
-
-    ${theme.breakpoints[0]} {
-      font-size: 4rem;
-    }
-  `
-);
-
-const PlayerPoint = styled.span(
-  ({ theme, player }) => css`
-    opacity: ${player && "0"};
-    width: 1rem;
-    height: 1rem;
-    background: ${theme.colors.yellow};
-    border-radius: 50%;
-    margin: 1rem;
-  `
-);
-
-// playboard Style
-const GameBoard = styled.div(
-  ({ theme }) => css`
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-auto-rows: 1fr;
-    overflow: hidden;
-    width: 51rem;
-    height: 51rem;
-
-    ${theme.breakpoints[0]} {
-      width: 30rem;
-      height: 30rem;
-    }
-  `
-);
-
-const GameButton = styled.button(
-  ({ theme }) => css`
-    font-size: 8rem;
-    font-weight: 500;
-
-    background: transparent;
-    outline: 2px solid ${theme.colors.beige};
-    border: none;
-    cursor: pointer;
-    text-align: center;
-
-    &:last-child {
-      grid-area: 3/3;
-    }
-  `
-);
-
-//players style
-const PlayerO = styled.p(
-  ({ theme }) => css`
-    font-size: 10rem;
-    color: ${theme.colors.darkGreen};
-    text-align: center;
-
-    ${theme.breakpoints[0]} {
-      font-size: 7rem;
-    }
-  `
-);
-
-const PlayerX = styled.p(
-  ({ theme }) => css`
-    font-size: 10rem;
-    color: ${theme.colors.white};
-    text-align: center;
-
-    ${theme.breakpoints[0]} {
-      font-size: 7rem;
-    }
-  `
-);
-
-// New Game and reset buttons style
-const ButtonWrapper = styled.div(
-  ({ theme }) => css`
-    display: flex;
-    padding: 2rem;
-    width: 70%;
-    justify-content: space-evenly;
-
-    ${theme.breakpoints[0]} {
-      width: 100%;
-      padding: 4rem 2rem;
-    }
-  `
-);
-
-const Button = styled.button(
-  ({ theme }) => css`
-    border: none;
-    text-transform: uppercase;
-    cursor: pointer;
-    font-size: 1.8rem;
-    background: transparent;
-    color: ${theme.colors.white};
-  `
-);
-
-const MessageWrapper = styled.div(
-  () => css`
-    position: absolute;
-  `
-);
-
-const Message = styled.div(
-  ({ theme }) => css`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    color: ${theme.colors.darkGreen};
-    background-color: ${theme.colors.white};
-    height: 5rem;
-    width: 50rem;
-    border-radius: 1.5rem;
-
-    ${theme.breakpoints[0]} {
-      width: 20rem;
-    }
-  `
-);
-
-const Winner = styled.p(
-  () => css`
-    font-size: 2rem;
-    font-weight: 700;
-    margin-right: 0.5rem;
-  `
-);
+import {
+  GameWrapper,
+  Title,
+  PlayerBoard,
+  Scoreboard,
+  PlayerPoint,
+  GameButton,
+  PlayerO,
+  PlayerX,
+  ButtonWrapper,
+  Button,
+  MessageWrapper,
+  Message,
+  Winner,
+  Board
+} from './styles'
 
 export default function Game() {
   const initialPositions = [
@@ -239,7 +69,7 @@ export default function Game() {
   };
 
   // Responsible for changing the value (-1 || 1) by the icon ( O || X)
-  const getplayerIcon = (indexRow, indexCell) => {
+  const getPlayerIcon = (indexRow, indexCell) => {
     if (ticTacToe[indexRow][indexCell][0] !== null) {
       return ticTacToe[indexRow][indexCell][0] > 0 ? (
         <>
@@ -338,7 +168,8 @@ export default function Game() {
         </Scoreboard>
         - X <PlayerPoint player={player}></PlayerPoint>
       </PlayerBoard>
-      <GameBoard>
+
+      <Board>
         {ticTacToe.map((row, indexRow) =>
           row.map((_, indexCell) => (
             <GameButton
@@ -346,11 +177,11 @@ export default function Game() {
               type="button"
               onClick={() => handelClick(indexRow, indexCell)}
             >
-              {getplayerIcon(indexRow, indexCell)}
+              {getPlayerIcon(indexRow, indexCell)}
             </GameButton>
           ))
         )}
-      </GameBoard>
+      </Board>
       <ButtonWrapper>
         <Button onClick={() => newGameButton()}>New Game</Button>
         <Button onClick={() => resetGameButton()}>Reset Game</Button>
